@@ -77,6 +77,7 @@ public class ServerCompatibility {
         CRAFTBUKKIT(Compatibility.INCOMPATIBLE), BUKKIT(Compatibility.INCOMPATIBLE),
         GLOWSTONE(Compatibility.INCOMPATIBLE), SPIGOT(Compatibility.COMPATIBLE), PAPER(Compatibility.SUPPORTED),
         PURPUR(Compatibility.SUPPORTED), TACOSPIGOT(Compatibility.NOT_SUPPORTED), AKARIN(Compatibility.NOT_SUPPORTED),
+        FOLIA(Compatibility.SUPPORTED),
         /**
          * @since 1.14.0
          */
@@ -349,7 +350,7 @@ public class ServerCompatibility {
     @NonNull
     public ServerSoftware getServerSoftware() {
         if (BentoBox.getFoliaLib().isFolia()) {
-            return ServerSoftware.UNKNOWN.setName("Folia");
+            return ServerSoftware.FOLIA;
         }
         if (Util.isPaper()) {
             return ServerSoftware.PAPER;
