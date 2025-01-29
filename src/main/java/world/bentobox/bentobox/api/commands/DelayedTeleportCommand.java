@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -11,8 +12,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.scheduler.BukkitTask;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.Addon;
 import world.bentobox.bentobox.api.user.User;
 
@@ -96,7 +97,7 @@ public abstract class DelayedTeleportCommand extends CompositeCommand implements
     public void delayCommand(User user, String message, Runnable confirmed) {
         if (getSettings().getDelayTime() < 1 || user.isOp() || user.hasPermission(getPermissionPrefix() + "mod.bypasscooldowns")
                 || user.hasPermission(getPermissionPrefix() + "mod.bypassdelays")) {
-            Bukkit.getScheduler().runTask(getPlugin(), confirmed);
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  confirmed.run());
             return;
         }
         // Check for pending delays
@@ -115,7 +116,7 @@ public abstract class DelayedTeleportCommand extends CompositeCommand implements
         // Tell user that they need to stand still
         user.sendMessage("commands.delay.stand-still", "[seconds]", String.valueOf(getSettings().getDelayTime()));
         // Set up the run task
-        BukkitTask task = Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
+        WrappedTask task = BentoBox.getFoliaLib().getScheduler().runLater( () -> {
             Bukkit.getScheduler().runTask(getPlugin(), toBeMonitored.get(uuid).runnable());
             toBeMonitored.remove(uuid);
         }, getPlugin().getSettings().getDelayTime() * 20L);
@@ -137,6 +138,6 @@ public abstract class DelayedTeleportCommand extends CompositeCommand implements
      * Holds the data to run once the confirmation is given
      *
      */
-    private record DelayedCommand(Runnable runnable, BukkitTask task, Location location) {}
+    private record DelayedCommand(Runnable runnable, WrappedTask task, Location location) {}
 
 }

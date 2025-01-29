@@ -3,9 +3,10 @@ package world.bentobox.bentobox.api.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.Addon;
 import world.bentobox.bentobox.api.user.User;
 
@@ -79,7 +80,7 @@ public abstract class ConfirmableCommand extends CompositeCommand {
         // Tell user that they need to confirm
         user.sendMessage("commands.confirmation.confirm", "[seconds]", String.valueOf(getSettings().getConfirmationTime()));
         // Set up a cancellation task
-        BukkitTask task = Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
+        WrappedTask task = BentoBox.getFoliaLib().getScheduler().runLater( () -> {
             user.sendMessage("commands.confirmation.request-cancelled");
             toBeConfirmed.remove(user);
         }, getPlugin().getSettings().getConfirmationTime() * 20L);
@@ -102,6 +103,6 @@ public abstract class ConfirmableCommand extends CompositeCommand {
      * Record to hold the data to run once the confirmation is given
      *
      */
-    private record Confirmer (String topLabel, String label, Runnable runnable, BukkitTask task) { }
+    private record Confirmer (String topLabel, String label, Runnable runnable, WrappedTask task) { }
 
 }

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
 
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
@@ -26,7 +26,7 @@ public class BentoBoxMigrateCommand extends ConfirmableCommand {
 
     private static final String MIGRATED = "commands.bentobox.migrate.migrated";
     private Queue<Class<? extends DataObject>> classQueue;
-    private BukkitTask task;
+    private WrappedTask task;
 
     /**
      * Reloads settings, addons and localization command
@@ -51,7 +51,7 @@ public class BentoBoxMigrateCommand extends ConfirmableCommand {
             // Put classSet into classQueue
             classQueue = new LinkedList<>(classSet);
             // Start a scheduler to step through these in a reasonable time
-            task = Bukkit.getScheduler().runTaskTimer(getPlugin(), () -> {
+            task = BentoBox.getFoliaLib().getScheduler().runTimer( () -> {
                 Class<? extends DataObject> t = classQueue.poll();
                 if (t != null) {
                     user.sendMessage("commands.bentobox.migrate.class", TextVariables.DESCRIPTION,
@@ -62,7 +62,7 @@ public class BentoBoxMigrateCommand extends ConfirmableCommand {
                     user.sendMessage("commands.bentobox.migrate.completed");
                     task.cancel();
                 }
-            }, 0, 20L);
+            }, 1, 20L);
         });
         return true;
     }

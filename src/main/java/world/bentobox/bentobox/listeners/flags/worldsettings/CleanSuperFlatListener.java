@@ -3,6 +3,7 @@ package world.bentobox.bentobox.listeners.flags.worldsettings;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -12,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.scheduler.BukkitTask;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -44,7 +44,7 @@ public class CleanSuperFlatListener extends FlagListener {
      * @since 1.1
      */
     @Nullable
-    private BukkitTask task;
+    private WrappedTask task;
 
     /**
      * Whether BentoBox is ready or not.
@@ -95,7 +95,7 @@ public class CleanSuperFlatListener extends FlagListener {
         
         if (this.task == null || this.task.isCancelled())
         {
-            this.task = Bukkit.getScheduler().runTaskTimer(this.plugin, () -> this.cleanChunk(world), 0L, 1L);
+            this.task = BentoBox.getFoliaLib().getScheduler().runTimer( () -> this.cleanChunk(world), 1L, 1L);
         }
     }
 

@@ -4,7 +4,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.World;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
@@ -65,15 +64,13 @@ public class DeleteIslandChunks {
                 })
                 .map(CompletableFuture::allOf)
                 .orElseGet(() -> CompletableFuture.completedFuture(null));
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+
+        BentoBox.getFoliaLib().getScheduler().runTimer(wrappedTask ->  {
                 if (all.isDone()) {
                     finish();
-                    cancel();
-                }
+                    wrappedTask.cancel();
             }
-        }.runTaskTimer(plugin, 0, 20);
+        },1 , 20);
     }
 
     private void finish() {

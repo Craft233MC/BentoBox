@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,7 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.NonNull;
@@ -62,7 +62,7 @@ public class BlueprintClipboard {
     private @Nullable Location pos1;
     private @Nullable Location pos2;
     private @Nullable Vector origin;
-    private BukkitTask copyTask;
+    private WrappedTask copyTask;
     private int count;
     private boolean copying;
     private int index;
@@ -158,7 +158,7 @@ public class BlueprintClipboard {
         }
 
         // Repeating copy task
-        copyTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+        copyTask = BentoBox.getFoliaLib().getScheduler().runTimer( () -> {
             if (copying) {
                 return;
             }
@@ -192,7 +192,7 @@ public class BlueprintClipboard {
                 user.sendMessage("commands.admin.blueprint.copied-blocks", TextVariables.NUMBER, String.valueOf(count));
             }
             copying = false;
-        }, 0L, 1L);
+        }, 1L, 1L);
     }
 
     /**

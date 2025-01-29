@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.PufferFish;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -1510,26 +1509,24 @@ public class IslandsManager {
 
         isSaveTaskRunning = true;
         Queue<Island> queue = new LinkedList<>(islandCache.getCachedIslands());
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < plugin.getSettings().getMaxSavedIslandsPerTick(); i++) {
-                    Island island = queue.poll();
-                    if (island == null) {
-                        isSaveTaskRunning = false;
-                        cancel();
-                        return;
-                    }
-                    if (island.isChanged()) {
-                        try {
-                            saveIsland(island);
-                        } catch (Exception e) {
-                            plugin.logError("Could not save island to database when running sync! " + e.getMessage());
-                        }
+
+        BentoBox.getFoliaLib().getScheduler().runTimer(wrappedTask -> {
+            for (int i = 0; i < plugin.getSettings().getMaxSavedIslandsPerTick(); i++) {
+                Island island = queue.poll();
+                if (island == null) {
+                    isSaveTaskRunning = false;
+                    wrappedTask.cancel();
+                    return;
+                }
+                if (island.isChanged()) {
+                    try {
+                        saveIsland(island);
+                    } catch (Exception e) {
+                        plugin.logError("Could not save island to database when running sync! " + e.getMessage());
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0, 1);
+        }, 1, 1);
     }
 
     /**

@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -17,7 +18,6 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +50,7 @@ public class SafeSpotTeleport {
     private final int maxHeight;
     private final World world;
     private final AtomicBoolean checking = new AtomicBoolean();
-    private BukkitTask task;
+    private WrappedTask task;
     private boolean portal;
     private boolean cancelIfFail;
     // Locations
@@ -98,7 +98,7 @@ public class SafeSpotTeleport {
         chunksToScanIterator = getChunksToScan().iterator();
 
         // Start a recurring task until done or cancelled
-        task = Bukkit.getScheduler().runTaskTimer(plugin, () -> gatherChunks(failureMessage), 0L, SPEED);
+        task = BentoBox.getFoliaLib().getScheduler().runTimer( () -> gatherChunks(failureMessage), 1L, SPEED);
     }
 
     boolean gatherChunks(String failureMessage) {

@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -13,7 +15,6 @@ import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -100,13 +101,16 @@ public class BentoBox extends JavaPlugin implements Listener {
 
     private Config<Settings> configObject;
 
-    private BukkitTask blueprintLoadingTask;
+    private WrappedTask blueprintLoadingTask;
 
     private boolean shutdown;
+
+    private static FoliaLib foliaLib;
 
     @Override
     public void onEnable(){
         setInstance(this);
+        foliaLib = new FoliaLib(this);
 
         if (!ServerCompatibility.getInstance().checkCompatibility().isCanLaunch()) {
             // The server's most likely incompatible.
@@ -177,7 +181,7 @@ public class BentoBox extends JavaPlugin implements Listener {
 
         final long loadTime = System.currentTimeMillis() - loadStart;
 
-        Bukkit.getScheduler().runTask(instance, () -> {
+        getFoliaLib().getScheduler().runNextTick( wrappedTask -> {
             try {
                 completeSetup(loadTime);
             } catch (Exception e) {
@@ -258,7 +262,7 @@ public class BentoBox extends JavaPlugin implements Listener {
                 "[time]", String.valueOf(loadTime + enableTime));
 
         // Poll for blueprints loading to be finished - async so could be a completely variable time
-        blueprintLoadingTask = Bukkit.getScheduler().runTaskTimer(instance, () -> {
+        blueprintLoadingTask = getFoliaLib().getScheduler().runTimer( () -> {
             if (getBlueprintsManager().isBlueprintsLoaded()) {
                 blueprintLoadingTask.cancel();
                 // Tell all addons that everything is loaded
@@ -270,7 +274,7 @@ public class BentoBox extends JavaPlugin implements Listener {
                 Bukkit.getPluginManager().callEvent(new BentoBoxReadyEvent());
                 instance.log("All blueprints loaded.");
             }
-        }, 0L, 1L);
+        }, 1L, 1L);
 
         if (getSettings().getDatabaseType().equals(DatabaseSetup.DatabaseType.YAML)) {
             logWarning("*** You're still using YAML database ! ***");
@@ -638,5 +642,9 @@ public class BentoBox extends JavaPlugin implements Listener {
      */
     public boolean isShutdown() {
         return shutdown;
+    }
+
+    public static FoliaLib getFoliaLib() {
+        return foliaLib;
     }
 }

@@ -7,8 +7,8 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitTask;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -35,7 +35,7 @@ public abstract class AbstractDatabaseHandler<T> {
     /**
      * Async save task that runs repeatedly
      */
-    private BukkitTask asyncSaveTask;
+    private WrappedTask asyncSaveTask;
     private boolean inSave;
 
     protected boolean shutdown;
@@ -101,7 +101,7 @@ public abstract class AbstractDatabaseHandler<T> {
         if (!plugin.isEnabled()) return;
         // Run async queue
         processQueue = new ConcurrentLinkedQueue<>();
-        asyncSaveTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        asyncSaveTask = BentoBox.getFoliaLib().getScheduler().runTimerAsync( () -> {
             // Check shutdown
             if(shutdown || plugin.isShutdown()) {
                 // Cancel - this will only get called if the plugin is shutdown separately to the server
@@ -114,7 +114,7 @@ public abstract class AbstractDatabaseHandler<T> {
                 }
                 inSave = false;
             }
-        }, 0L, 1L);
+        }, 1L, 1L);
     }
 
     protected AbstractDatabaseHandler() {}

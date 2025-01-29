@@ -17,6 +17,7 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -27,7 +28,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,7 +105,7 @@ public class ClosestSafeSpotTeleport
         this.chunksToScanIterator = this.getChunksToScan().iterator();
 
         // Start a recurring task until done or cancelled
-        this.task = Bukkit.getScheduler().runTaskTimer(this.plugin, this::gatherChunks, 0L, CHUNK_LOAD_SPEED);
+        this.task = BentoBox.getFoliaLib().getScheduler().runTimer( this::gatherChunks, 1L, CHUNK_LOAD_SPEED);
     }
 
 
@@ -813,6 +813,6 @@ public class ClosestSafeSpotTeleport
     /**
      * Bukkit task that processes chunks.
      */
-    private BukkitTask task;
+    private WrappedTask task;
 }
 
