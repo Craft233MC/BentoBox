@@ -573,7 +573,7 @@
                         </relocation>
                         <relocation>
                             <pattern>com.tcoded.folialib</pattern>
-                            <shadedPattern>io.github.thebusybiscuit.slimefun4.libraries.folialib</shadedPattern>
+                            <shadedPattern>orld.bentobox.bentobox.folialib</shadedPattern>
                         </relocation>
                         </relocations>
                     <artifactSet>
