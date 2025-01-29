@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.eclipse.jdt.annotation.NonNull;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.events.flags.FlagSettingChangeEvent;
 import world.bentobox.bentobox.api.flags.Flag;
 import world.bentobox.bentobox.api.flags.FlagListener;
@@ -198,7 +199,7 @@ public class PVPListener extends FlagListener {
         if (e.getEntity().getShooter() instanceof Player player && getPlugin().getIWM().inWorld(e.getEntity().getWorld())) {
             // Store it and remove it when the effect is gone (Entity ID, UUID of throwing player)
             thrownPotions.put(e.getAreaEffectCloud().getEntityId(), player.getUniqueId());
-            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> thrownPotions.remove(e.getAreaEffectCloud().getEntityId()), e.getAreaEffectCloud().getDuration());
+            BentoBox.getFoliaLib().getScheduler().runLater(() -> thrownPotions.remove(e.getAreaEffectCloud().getEntityId()), e.getAreaEffectCloud().getDuration());
         }
     }
 

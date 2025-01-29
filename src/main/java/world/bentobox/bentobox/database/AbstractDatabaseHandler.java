@@ -142,7 +142,7 @@ public abstract class AbstractDatabaseHandler<T> {
     public CompletableFuture<List<T>> loadObjectsASync() {
         CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
 
-        Bukkit.getScheduler().runTaskAsynchronously(BentoBox.getInstance(), () -> {
+        BentoBox.getFoliaLib().getScheduler().runAsync(wrappedTask -> {
             try {
                 completableFuture.complete(loadObjects()); // Complete the future with the result
             } catch (Exception e) {

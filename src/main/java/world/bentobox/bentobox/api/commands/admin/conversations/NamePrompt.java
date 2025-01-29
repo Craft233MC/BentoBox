@@ -40,9 +40,9 @@ public class NamePrompt extends StringPrompt {
     @Override
     public Prompt acceptInput(@NonNull ConversationContext context, String input) {
         if (island.renameHome(oldName, input)) {
-            Bukkit.getScheduler().runTask(plugin, () -> user.sendMessage("general.success"));
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> user.sendMessage("general.success"));
         } else {
-            Bukkit.getScheduler().runTask(plugin, () -> user.sendMessage("commands.island.renamehome.already-exists"));
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> user.sendMessage("commands.island.renamehome.already-exists"));
         }
         return Prompt.END_OF_CONVERSATION;
     }

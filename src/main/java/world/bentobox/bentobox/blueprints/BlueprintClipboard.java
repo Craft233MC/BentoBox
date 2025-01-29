@@ -139,8 +139,7 @@ public class BlueprintClipboard {
 
         int speed = plugin.getSettings().getPasteSpeed();
         List<Vector> vectorsToCopy = getVectors(toCopy);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin,
-                () -> copyAsync(world, user, vectorsToCopy, speed, copyAir, copyBiome, noWater));
+        BentoBox.getFoliaLib().getScheduler().runAsync(wrappedTask -> copyAsync(world, user, vectorsToCopy, speed, copyAir, copyBiome, noWater));
         return true;
     }
 

@@ -26,7 +26,7 @@ public class IslandChunkDeletionManager implements Runnable {
         this.slowDeletion = plugin.getSettings().isSlowDeletion();
 
         if (slowDeletion) {
-            Bukkit.getScheduler().runTaskTimer(plugin, this, 0L, 20L);
+            BentoBox.getFoliaLib().getScheduler().runTimer(this, 0L, 20L);
         }
     }
 

@@ -130,7 +130,7 @@ public class HeadGetter {
      * @since 1.14.1
      */
     private void runPlayerHeadGetter() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        BentoBox.getFoliaLib().getScheduler().runTimerAsync(() -> {
             synchronized (HeadGetter.names) {
                 int counter = 0;
 
@@ -139,7 +139,7 @@ public class HeadGetter {
                     final String userName = elementEntry.getKey();
 
                     // Hmm, task in task in task. That is a weird structure.
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    BentoBox.getFoliaLib().getScheduler().runAsync(wrappedTask -> {
                         // Check if we can get user Id.
                         UUID userId;
 
@@ -187,8 +187,7 @@ public class HeadGetter {
 
                                 if (!plugin.isShutdown()) {
                                     // Do not run task if plugin is shutting down.
-                                    Bukkit.getScheduler().runTaskAsynchronously(this.plugin,
-                                            () -> req.setHead(elementEntry.getValue()));
+                                    BentoBox.getFoliaLib().getScheduler().runAsync(subWrappedTask -> req.setHead(elementEntry.getValue()));
                                 }
                             }
                         }
@@ -197,7 +196,7 @@ public class HeadGetter {
                     counter++;
                 }
             }
-        }, 0, plugin.getSettings().getTicksBetweenCalls());
+        }, 1, plugin.getSettings().getTicksBetweenCalls());
     }
 
     /**

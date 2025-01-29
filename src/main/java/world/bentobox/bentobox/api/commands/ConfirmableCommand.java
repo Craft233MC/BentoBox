@@ -65,7 +65,7 @@ public abstract class ConfirmableCommand extends CompositeCommand {
         if (toBeConfirmed.containsKey(user)) {
             if (toBeConfirmed.get(user).topLabel().equals(getTopLabel()) && toBeConfirmed.get(user).label().equalsIgnoreCase(getLabel())) {
                 toBeConfirmed.get(user).task().cancel();
-                Bukkit.getScheduler().runTask(getPlugin(), toBeConfirmed.get(user).runnable());
+                BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> toBeConfirmed.get(user).runnable().run());
                 toBeConfirmed.remove(user);
                 return;
             } else {

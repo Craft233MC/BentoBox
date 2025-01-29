@@ -57,11 +57,11 @@ public class WebManager {
             long connectionInterval = plugin.getSettings().getGithubConnectionInterval() * 20L * 60L;
             if (connectionInterval <= 0) {
                 // If below 0, it means we shouldn't run this as a repeating task.
-                plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, this::requestGitHubData, 20L);
+                BentoBox.getFoliaLib().getScheduler().runLaterAsync(this::requestGitHubData, 20L);
             } else {
                 // Set connection interval to be at least 60 minutes.
                 connectionInterval = Math.max(connectionInterval, 60 * 20 * 60L);
-                plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::requestGitHubData, 20L, connectionInterval);
+                BentoBox.getFoliaLib().getScheduler().runTimerAsync(this::requestGitHubData, 20L, connectionInterval);
             }
         }
     }

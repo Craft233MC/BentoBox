@@ -117,7 +117,7 @@ public abstract class DelayedTeleportCommand extends CompositeCommand implements
         user.sendMessage("commands.delay.stand-still", "[seconds]", String.valueOf(getSettings().getDelayTime()));
         // Set up the run task
         WrappedTask task = BentoBox.getFoliaLib().getScheduler().runLater( () -> {
-            Bukkit.getScheduler().runTask(getPlugin(), toBeMonitored.get(uuid).runnable());
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  toBeMonitored.get(uuid).runnable().run());
             toBeMonitored.remove(uuid);
         }, getPlugin().getSettings().getDelayTime() * 20L);
 

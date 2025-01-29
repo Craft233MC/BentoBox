@@ -207,7 +207,7 @@ public class NewIsland {
         // Run task to run after creating the island in one tick if island is not being
         // pasted
         if (noPaste) {
-            Bukkit.getScheduler().runTask(plugin, () -> postCreationTask(oldIsland));
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> postCreationTask(oldIsland));
         } else {
             // Find out how far away the player is from the new island
             boolean useNMS = !user.getWorld().equals(island.getWorld())

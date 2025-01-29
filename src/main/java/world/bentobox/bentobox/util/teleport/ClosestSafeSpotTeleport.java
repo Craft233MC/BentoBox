@@ -293,7 +293,7 @@ public class ClosestSafeSpotTeleport
         else if (this.entity instanceof Player player)
         {
             // Return to main thread and teleport the player
-            Bukkit.getScheduler().runTask(this.plugin, () -> returnAndTeleport(player));
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  returnAndTeleport(player));
         }
         // We do not teleport entities if position failed.
         // Fail the completion
@@ -371,7 +371,7 @@ public class ClosestSafeSpotTeleport
     void teleportEntity(final Location location)
     {
         // Return to main thread and teleport the player
-        Bukkit.getScheduler().runTask(this.plugin, () -> this.asyncTeleport(location));
+        BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> this.asyncTeleport(location));
     }
 
 
@@ -385,7 +385,7 @@ public class ClosestSafeSpotTeleport
         {
             if (this.successRunnable != null)
             {
-                Bukkit.getScheduler().runTask(this.plugin, this.successRunnable);
+                BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  this.successRunnable.run());
             }
 
             this.result.complete(true);

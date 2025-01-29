@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.hooks.Hook;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintEntity.MythicMobRecord;
 
@@ -60,7 +61,7 @@ public class MythicMobsHook extends Hook {
         }
         return MythicBukkit.inst().getMobManager().getMythicMob(mmr.type()).map(mob -> {
             // A delay is required before spawning, I assume because the blocks are pasted using NMS
-            Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
+            BentoBox.getFoliaLib().getScheduler().runLater(() -> {
                 // spawns mob            
                 ActiveMob activeMob = mob.spawn(BukkitAdapter.adapt(spawnLocation), mmr.level());
                 activeMob.setDisplayName(mmr.displayName());

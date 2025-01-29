@@ -88,7 +88,7 @@ public class PlayerTeleportListener extends AbstractTeleportListener implements 
         if (!Bukkit.getAllowNether() && type.equals(Material.NETHER_PORTAL))
         {
             // Schedule a time
-            Bukkit.getScheduler().runTaskLater(this.plugin, () ->
+            BentoBox.getFoliaLib().getScheduler().runLater(() ->
             {
                 // Check again if still in portal
                 if (this.inPortal.contains(uuid))
@@ -331,7 +331,7 @@ public class PlayerTeleportListener extends AbstractTeleportListener implements 
         // It is placed outside THE_END check, as technically it could happen with the nether portal too.
 
         // If there is a portal to go to already, then the player will go there
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
+        BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  {
             if (!event.getPlayer().getWorld().equals(toWorld))
             {
                 // Else manually teleport entity

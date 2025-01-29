@@ -88,7 +88,7 @@ public class SafeSpotTeleport {
             } else {
                 // If this is not a portal teleport, then go to the safe location immediately
                 Util.teleportAsync(Objects.requireNonNull(entity), Objects.requireNonNull(location)).thenRun(() -> {
-                    if (runnable != null) Bukkit.getScheduler().runTask(plugin, runnable);
+                    if (runnable != null) BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> runnable.run());
                     result.complete(true);
                 });
                 return;
@@ -145,7 +145,7 @@ public class SafeSpotTeleport {
             teleportEntity(bestSpot);
         } else if (entity instanceof Player player) {
             // Return to main thread and teleport the player
-            Bukkit.getScheduler().runTask(plugin, () -> {
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> {
                 // Failed, no safe spot
                 if (!failureMessage.isEmpty()) {
                     User.getInstance(entity).notify(failureMessage);
@@ -164,13 +164,13 @@ public class SafeSpotTeleport {
                     }
                 }
                 if (failRunnable != null) {
-                    Bukkit.getScheduler().runTask(plugin, failRunnable);
+                    BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask1 ->  failRunnable.run());
                 }
                 result.complete(false);
             });
         } else {
             if (failRunnable != null) {
-                Bukkit.getScheduler().runTask(plugin, failRunnable);
+                BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> failRunnable.run());
             }
             result.complete(false);
         }
@@ -183,7 +183,7 @@ public class SafeSpotTeleport {
         location.getBlock().getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(m, false);
         Util.teleportAsync(Objects.requireNonNull(entity),
                 Objects.requireNonNull(location.clone().add(new Vector(0.5D, 0D, 0.5D)))).thenRun(() -> {
-            if (runnable != null) Bukkit.getScheduler().runTask(plugin, runnable);
+            if (runnable != null) BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> runnable.run());
             result.complete(true);
         });
     }
@@ -280,13 +280,13 @@ public class SafeSpotTeleport {
     void teleportEntity(@NonNull final Location loc) {
         task.cancel();
         // Return to main thread and teleport the player
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> {
             if (!portal && entity instanceof Player && (homeNumber > 0 || !homeName.isEmpty())) {
                 // Set home if so marked
                 plugin.getIslands().setHomeLocation(User.getInstance(entity), loc, homeName);
             }
             Util.teleportAsync(Objects.requireNonNull(entity), Objects.requireNonNull(loc)).thenRun(() -> {
-                if (runnable != null) Bukkit.getScheduler().runTask(plugin, runnable);
+                if (runnable != null) BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  runnable.run());
                 result.complete(true);
             });
         });

@@ -1324,7 +1324,7 @@ public class IslandsManager {
 
             toQuarantine.forEach(handler::saveObjectAsync);
             // Check if there are any islands with duplicate islands
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            BentoBox.getFoliaLib().getScheduler().runAsync(wrappedTask -> {
                 Set<UUID> duplicatedUUIDRemovedSet = new HashSet<>();
                 Set<UUID> duplicated = islandCache.getIslands().stream().map(Island::getOwner).filter(Objects::nonNull)
                         .filter(n -> !duplicatedUUIDRemovedSet.add(n)).collect(Collectors.toSet());
@@ -1676,7 +1676,7 @@ public class IslandsManager {
      * @param uniqueId - UUID of player
      */
     public void clearRank(int rank, UUID uniqueId) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> clearRankSync(rank, uniqueId));
+        BentoBox.getFoliaLib().getScheduler().runAsync(wrappedTask -> clearRankSync(rank, uniqueId));
     }
 
     void clearRankSync(int rank, UUID uniqueId) {

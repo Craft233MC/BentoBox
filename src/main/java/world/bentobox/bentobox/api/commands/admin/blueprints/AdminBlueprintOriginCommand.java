@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.blueprints.BlueprintClipboard;
@@ -39,8 +40,7 @@ public class AdminBlueprintOriginCommand extends CompositeCommand {
         if (b != null) {
             clipboard.setOrigin(b.getLocation().toVector());
             user.getPlayer().sendBlockChange(b.getLocation(), Material.REDSTONE_BLOCK.createBlockData());
-            Bukkit.getScheduler().runTaskLater(getPlugin(),
-                    () -> user.getPlayer().sendBlockChange(b.getLocation(), b.getBlockData()), 20L);
+            BentoBox.getFoliaLib().getScheduler().runLater(() -> user.getPlayer().sendBlockChange(b.getLocation(), b.getBlockData()), 20L);
 
             user.sendMessage("general.success");
             return true;

@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tcoded.folialib.impl.PlatformScheduler;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
@@ -69,7 +72,8 @@ public class AdminRangeDisplayCommand extends CompositeCommand {
     private void showZones(User user) {
         user.sendMessage("commands.admin.range.display.showing");
         user.sendMessage("commands.admin.range.display.hint");
-        displayRanges.put(user, Bukkit.getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
+        // I dont know how to deal it :(
+        displayRanges.put(user, BentoBox.getFoliaLib().getScheduler().runTimer(() -> {
             if (!user.getPlayer().isOnline()) {
                 hideZones(user);
             }
@@ -86,12 +90,12 @@ public class AdminRangeDisplayCommand extends CompositeCommand {
                 // Draw the island area
                 drawZone(user, PARTICLE, new Particle.DustOptions(Color.GRAY, 1.0F), island, island.getRange());
             });
-        }, 20, 30));
+        }, 20, 30).hashCode());
     }
 
     private void hideZones(User user) {
         user.sendMessage("commands.admin.range.display.hiding");
-        Bukkit.getScheduler().cancelTask(displayRanges.get(user));
+        BentoBox.getFoliaLib().getScheduler().cancelAllTasks();
         displayRanges.remove(user);
     }
 

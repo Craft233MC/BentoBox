@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.commands.ConfirmableCommand;
 import world.bentobox.bentobox.api.commands.admin.range.AdminRangeDisplayCommand;
@@ -69,8 +70,9 @@ public class AdminBlueprintCommand extends ConfirmableCommand {
      */
     protected void showClipboard(User user)
     {
+        // I dont know how to deal it :(
         this.displayClipboards.computeIfAbsent(user,
-            key -> Bukkit.getScheduler().scheduleSyncRepeatingTask(this.getPlugin(), () ->
+            key -> BentoBox.getFoliaLib().getScheduler().runTimer(() ->
             {
                 if (!key.isPlayer() || !key.getPlayer().isOnline())
                 {
@@ -82,7 +84,7 @@ public class AdminBlueprintCommand extends ConfirmableCommand {
                     BlueprintClipboard clipboard = this.clipboards.get(key.getUniqueId());
                     this.paintAxis(key, clipboard);
                 }
-            }, 20, 20));
+            }, 20, 20).hashCode());
     }
 
 
@@ -137,7 +139,7 @@ public class AdminBlueprintCommand extends ConfirmableCommand {
 
     protected void hideClipboard(User user) {
         if (displayClipboards.containsKey(user)) {
-            Bukkit.getScheduler().cancelTask(displayClipboards.get(user));
+            BentoBox.getFoliaLib().getScheduler().cancelAllTasks();
             displayClipboards.remove(user);
         }
     }

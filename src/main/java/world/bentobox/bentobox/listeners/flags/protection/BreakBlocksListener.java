@@ -22,6 +22,7 @@ import org.bukkit.event.vehicle.VehicleDamageEvent;
 
 import com.google.common.base.Enums;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.flags.FlagListener;
 import world.bentobox.bentobox.lists.Flags;
 
@@ -212,7 +213,7 @@ public class BreakBlocksListener extends FlagListener {
             // We seemingly can't prevent the block from being destroyed
             // So we need to put it back with a slight delay (yup, this is hacky - it makes the block flicker sometimes)
             e.getHitBlock().setType(Material.AIR); // prevents the block from dropping a chorus flower
-            getPlugin().getServer().getScheduler().runTask(getPlugin(), () -> e.getHitBlock().setBlockData(data, true));
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask-> e.getHitBlock().setBlockData(data, true));
             // Sorry, this might also cause some ghost blocks!
         }
     }

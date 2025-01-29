@@ -68,7 +68,7 @@ public class LockAndBanListener extends FlagListener {
         // Check from - just in case the player is inside the island
         if (!check(e.getPlayer(), e.getFrom()).equals(CheckResult.OPEN)) {
             // Has to be done 1 tick later otherwise it doesn't happen for some reason...
-            Bukkit.getScheduler().runTask(BentoBox.getInstance(), () -> eject(e.getPlayer()));
+            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  eject(e.getPlayer()));
         }
     }
 

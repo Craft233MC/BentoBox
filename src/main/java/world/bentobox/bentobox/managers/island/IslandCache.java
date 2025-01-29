@@ -533,8 +533,7 @@ public class IslandCache {
      * @since 1.3.0
      */
     public void resetAllFlags(World world) {
-        Bukkit.getScheduler().runTaskAsynchronously(BentoBox.getInstance(),
-                () -> this.getIslands(world).stream().forEach(Island::setFlagsDefaults));
+        BentoBox.getFoliaLib().getScheduler().runAsync(wrappedTask -> this.getIslands(world).stream().forEach(Island::setFlagsDefaults));
     }
 
     /**
