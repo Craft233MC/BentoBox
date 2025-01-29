@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.util.Util;
 
 /**
@@ -347,6 +348,9 @@ public class ServerCompatibility {
      */
     @NonNull
     public ServerSoftware getServerSoftware() {
+        if (BentoBox.getFoliaLib().isFolia()) {
+            return ServerSoftware.UNKNOWN.setName("Folia");
+        }
         if (Util.isPaper()) {
             return ServerSoftware.PAPER;
         }
