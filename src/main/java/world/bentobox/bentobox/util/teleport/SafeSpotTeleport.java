@@ -286,7 +286,7 @@ public class SafeSpotTeleport {
                 plugin.getIslands().setHomeLocation(User.getInstance(entity), loc, homeName);
             }
             Util.teleportAsync(Objects.requireNonNull(entity), Objects.requireNonNull(loc)).thenRun(() -> {
-                if (runnable != null) BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  runnable.run());
+                if (runnable != null) BentoBox.getFoliaLib().getScheduler().runNextTick(subWrappedTask ->  runnable.run());
                 result.complete(true);
             });
         });
