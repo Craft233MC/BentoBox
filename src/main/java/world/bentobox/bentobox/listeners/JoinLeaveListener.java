@@ -16,6 +16,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.addons.GameModeAddon;
 import world.bentobox.bentobox.api.events.island.IslandEvent;
@@ -30,6 +32,7 @@ import world.bentobox.bentobox.util.Util;
 
 public class JoinLeaveListener implements Listener {
 
+    private static final Logger log = LoggerFactory.getLogger(JoinLeaveListener.class);
     private final BentoBox plugin;
     private final PlayersManager players;
 
@@ -91,7 +94,7 @@ public class JoinLeaveListener implements Listener {
         // island.
         if (plugin.getIslands().locationIsOnIsland(event.getPlayer(), user.getLocation())
                 && Flags.REMOVE_MOBS.isSetForWorld(user.getWorld())) {
-            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask ->  plugin.getIslands().clearArea(user.getLocation()));
+            BentoBox.getFoliaLib().getScheduler().runAtLocation(user.getLocation(),wrappedTask ->  plugin.getIslands().clearArea(user.getLocation()));
         }
 
         // Clear inventory if required
@@ -164,9 +167,9 @@ public class JoinLeaveListener implements Listener {
                         };
 
                         if (delay <= 0) {
-                            BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> createIsland.run());
+                            BentoBox.getFoliaLib().getScheduler().runAtLocation(user.getLocation(),wrappedTask -> createIsland.run());
                         } else {
-                            BentoBox.getFoliaLib().getScheduler().runLater( createIsland, delay * 20L);
+                            BentoBox.getFoliaLib().getScheduler().runAtLocationLater(user.getLocation(), createIsland, delay * 20L);
                         }
                     }
                 });

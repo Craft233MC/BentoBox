@@ -65,7 +65,7 @@ public class DeleteIslandChunks {
                 .map(CompletableFuture::allOf)
                 .orElseGet(() -> CompletableFuture.completedFuture(null));
 
-        BentoBox.getFoliaLib().getScheduler().runTimer(wrappedTask ->  {
+        BentoBox.getFoliaLib().getScheduler().runAtLocationTimer(di.getLocation(),wrappedTask ->  {
                 if (all.isDone()) {
                     finish();
                     wrappedTask.cancel();

@@ -27,6 +27,7 @@ public class DefaultNewIslandLocationStrategy implements NewIslandLocationStrate
      * island.
      */
     protected static final Integer MAX_UNOWNED_ISLANDS = 20;
+    private static Result result = Result.FREE;
 
     protected enum Result {
         ISLAND_FOUND, BLOCKS_IN_AREA, FREE
@@ -102,16 +103,19 @@ public class DefaultNewIslandLocationStrategy implements NewIslandLocationStrate
             return Result.FREE;
         }
         // Block check
-        if (plugin.getIWM().isCheckForBlocks(world) 
-                && !plugin.getIWM().isUseOwnGenerator(world) 
-                && Arrays.stream(BlockFace.values()).anyMatch(bf ->
-                !location.getBlock().getRelative(bf).isEmpty() 
-                && !location.getBlock().getRelative(bf).getType().equals(Material.WATER))) {
-            // Block found
-            plugin.getIslands().createIsland(location);
-            return Result.BLOCKS_IN_AREA;
-        }
-        return Result.FREE;
+        BentoBox.getFoliaLib().getScheduler().runAtLocation(location, wrappedTask -> {
+            if (plugin.getIWM().isCheckForBlocks(world)
+                    && !plugin.getIWM().isUseOwnGenerator(world)
+                    && Arrays.stream(BlockFace.values()).anyMatch(bf ->
+                    !location.getBlock().getRelative(bf).isEmpty()
+                            && !location.getBlock().getRelative(bf).getType().equals(Material.WATER))) {
+                // Block found
+                plugin.getIslands().createIsland(location);
+                result = Result.BLOCKS_IN_AREA;
+            }
+        });
+
+        return result;
     }
 
     /**

@@ -105,7 +105,7 @@ public class ClosestSafeSpotTeleport
         this.chunksToScanIterator = this.getChunksToScan().iterator();
 
         // Start a recurring task until done or cancelled
-        this.task = BentoBox.getFoliaLib().getScheduler().runTimer( this::gatherChunks, 1L, CHUNK_LOAD_SPEED);
+        this.task = BentoBox.getFoliaLib().getScheduler().runAtLocationTimer(location, this::gatherChunks, 1L, CHUNK_LOAD_SPEED);
     }
 
 

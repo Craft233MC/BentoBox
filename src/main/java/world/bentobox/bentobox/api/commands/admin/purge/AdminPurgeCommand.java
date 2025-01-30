@@ -151,7 +151,7 @@ public class AdminPurgeCommand extends CompositeCommand implements Listener {
     void onIslandDeleted(IslandDeletedEvent e) {
         if (inPurge) {
             // Run after one tick - you cannot run millions of events in one tick otherwise the server shuts down
-            BentoBox.getFoliaLib().getScheduler().runLater(() -> deleteIsland(), 2L); // 10 a second
+            BentoBox.getFoliaLib().getScheduler().runAtLocationLater(e.getLocation(), this::deleteIsland, 2L); // 10 a second
         }
     }
 

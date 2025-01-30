@@ -74,6 +74,7 @@ public class Util {
     private static BentoBox plugin = BentoBox.getInstance();
     private static PasteHandler pasteHandler = null;
     private static WorldRegenerator regenerator = null;
+    private static Boolean isGenerated = false;
 
     private Util() {}
 
@@ -489,7 +490,11 @@ public class Util {
      * @return If the chunk is generated or not
      */
     public static boolean isChunkGenerated(@Nonnull World world, int x, int z) {
-        return world.isChunkGenerated(x, z);
+        Location loc = new Location(world, x , 0, z );
+        BentoBox.getFoliaLib().getScheduler().runAtLocation(loc ,wrappedTask -> {
+          isGenerated = loc.isGenerated();
+        });
+        return isGenerated;
     }
 
     /**
