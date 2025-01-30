@@ -65,7 +65,7 @@ public abstract class ConfirmableCommand extends CompositeCommand {
         if (toBeConfirmed.containsKey(user)) {
             if (toBeConfirmed.get(user).topLabel().equals(getTopLabel()) && toBeConfirmed.get(user).label().equalsIgnoreCase(getLabel())) {
                 toBeConfirmed.get(user).task().cancel();
-                BentoBox.getFoliaLib().getScheduler().runNextTick(wrappedTask -> toBeConfirmed.get(user).runnable().run());
+                BentoBox.getFoliaLib().getScheduler().runLater(toBeConfirmed.get(user).runnable(), 1);
                 toBeConfirmed.remove(user);
                 return;
             } else {
@@ -80,7 +80,7 @@ public abstract class ConfirmableCommand extends CompositeCommand {
         // Tell user that they need to confirm
         user.sendMessage("commands.confirmation.confirm", "[seconds]", String.valueOf(getSettings().getConfirmationTime()));
         // Set up a cancellation task
-        WrappedTask task = BentoBox.getFoliaLib().getScheduler().runLater( () -> {
+        WrappedTask task = BentoBox.getFoliaLib().getScheduler().runAtLocationLater( user.getLocation(),() -> {
             user.sendMessage("commands.confirmation.request-cancelled");
             toBeConfirmed.remove(user);
         }, getPlugin().getSettings().getConfirmationTime() * 20L);
