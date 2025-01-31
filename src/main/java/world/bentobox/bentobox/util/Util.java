@@ -381,6 +381,7 @@ public class Util {
      */
     @NonNull
     public static CompletableFuture<Boolean> teleportAsync(@Nonnull Entity entity, @Nonnull Location location) {
+        entity.setFallDistance(0);
         return teleportAsync(entity, location, TeleportCause.UNKNOWN);
     }
 
@@ -408,7 +409,8 @@ public class Util {
             plugin.logStacktrace(e); // Report other exceptions
         }
         // Fallback for Spigot servers
-        entity.teleport(location, cause);
+        entity.setFallDistance(0);
+        entity.teleportAsync(location, cause);
         return CompletableFuture.completedFuture(true);
     }
     /**
