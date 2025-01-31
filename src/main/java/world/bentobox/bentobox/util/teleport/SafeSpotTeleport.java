@@ -40,7 +40,6 @@ public class SafeSpotTeleport {
     private static final int MAX_CHUNKS = 6;
     private static final long SPEED = 1;
     private static final int MAX_RADIUS = 50;
-    private static final Logger log = LoggerFactory.getLogger(SafeSpotTeleport.class);
     // Parameters
     private final @NonNull Entity entity;
     private final @NonNull Location location;
@@ -84,13 +83,11 @@ public class SafeSpotTeleport {
     }
 
     void tryToGo(String failureMessage) {
-        log.info("try to go!");
         if (plugin.getIslands().isSafeLocation(location)) {
             if (portal) {
                 // If the desired location is safe, then that's where you'll go if there's no portal
                 bestSpot = location;
             } else {
-                log.info("try.else");
                 // If this is not a portal teleport, then go to the safe location immediately
                 Util.teleportAsync(Objects.requireNonNull(entity), Objects.requireNonNull(location)).thenRun(() -> {
                     if (runnable != null) BentoBox.getFoliaLib().getScheduler().runAtEntity(entity,wrappedTask -> runnable.run());
@@ -141,7 +138,6 @@ public class SafeSpotTeleport {
     }
 
     void tidyUp(Entity entity, String failureMessage) {
-        log.info("tidyUp!");
         // Still Async!
         // Nothing left to check and still not canceled
         task.cancel();
@@ -183,7 +179,6 @@ public class SafeSpotTeleport {
     }
 
     void makeAndTeleport(Material m) {
-        log.info("make and teleport");
         location.getBlock().getRelative(BlockFace.DOWN).setType(m, false);
         location.getBlock().setType(Material.AIR, false);
         location.getBlock().getRelative(BlockFace.UP).setType(Material.AIR, false);
@@ -285,7 +280,6 @@ public class SafeSpotTeleport {
      * Teleports entity to the safe spot
      */
     void teleportEntity(@NonNull final Location loc) {
-        log.info("teleport entity");
         task.cancel();
         // Return to main thread and teleport the player
         BentoBox.getFoliaLib().getScheduler().runAtLocation(loc,wrappedTask -> {
