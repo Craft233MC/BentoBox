@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nonnull;
 
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -59,6 +60,8 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
     private final BentoBox plugin;
     private Optional<FancyNpcsHook> npc;
     private Optional<ZNPCsPlusHook> znpc;
+    private static WrappedTask regenerateCopyTask;
+    private static WrappedTask regenerateSimpleTask;
 
     protected CopyWorldRegenerator() {
         this.plugin = BentoBox.getInstance();
@@ -93,37 +96,44 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
     public CompletableFuture<Void> regenerateCopy(GameModeAddon gm, IslandDeletion di, World world) {
         CompletableFuture<Void> bigFuture = new CompletableFuture<>();
 
-        BentoBox.getFoliaLib().getScheduler().runTimer(wrappedTask -> {
-            int chunkX = di.getMinXChunk();
-            int chunkZ = di.getMinZChunk();
+        regenerateCopyTask = BentoBox.getFoliaLib().getScheduler().runTimer(new Runnable() {
+            private int chunkX = di.getMinXChunk();
+            private int chunkZ = di.getMinZChunk();
             CompletableFuture<Void> currentTask = CompletableFuture.completedFuture(null);
 
-            if (!currentTask.isDone()) return;
-            if (chunkX > di.getMaxXChunk()) {
-                wrappedTask.cancel();
-                bigFuture.complete(null);
-                return;
+            @Override
+            public void run() {
+                if (!currentTask.isDone()) return;
+                if (isEnded(chunkX)) {
+                    BentoBox.getFoliaLib().getScheduler().cancelTask(regenerateCopyTask);
+                    bigFuture.complete(null);
+                    return;
+                }
+                List<CompletableFuture<Void>> newTasks = new ArrayList<>();
+                for (int i = 0; i < plugin.getSettings().getDeleteSpeed(); i++) {
+                    if (isEnded(chunkX)) {
+                        break;
+                    }
+                    final int x = chunkX;
+                    final int z = chunkZ;
+                    // Only add chunks that are generated
+                    if (world.getChunkAt(x, z, false).isGenerated()) {
+                        newTasks.add(regenerateChunk(di, world, x, z));
+                    }
+                    chunkZ++;
+                    if (chunkZ > di.getMaxZChunk()) {
+                        chunkZ = di.getMinZChunk();
+                        chunkX++;
+                    }
+                }
+                currentTask = CompletableFuture.allOf(newTasks.toArray(new CompletableFuture[0]));
             }
-            List<CompletableFuture<Void>> newTasks = new ArrayList<>();
-            for (int i = 0; i < plugin.getSettings().getDeleteSpeed(); i++) {
-                if (chunkX > di.getMaxXChunk()) {
-                    break;
-                }
-                final int x = chunkX;
-                final int z = chunkZ;
-                // Only add chunks that are generated
-                if (world.getChunkAt(x, z, false).isGenerated()) {
-                    newTasks.add(regenerateChunk(di, world, x, z));
-                }
-                chunkZ++;
-                if (chunkZ > di.getMaxZChunk()) {
-                    chunkZ = di.getMinZChunk();
-                    chunkX++;
-                }
-            }
-            currentTask = CompletableFuture.allOf(newTasks.toArray(new CompletableFuture[0]));
 
+            private boolean isEnded(int chunkX) {
+                return chunkX > di.getMaxXChunk();
+            }
         }, 1L , 20L);
+
         return bigFuture;
     }
 
@@ -330,33 +340,39 @@ public abstract class CopyWorldRegenerator implements WorldRegenerator {
             bigFuture.complete(null);
             return bigFuture;
         }
-
-        BentoBox.getFoliaLib().getScheduler().runTimer(wrappedTask -> {
-            int chunkX = di.getMinXChunk();
-            int chunkZ = di.getMinZChunk();
+        regenerateSimpleTask = BentoBox.getFoliaLib().getScheduler().runTimer(new Runnable() {
+            private int chunkX = di.getMinXChunk();
+            private int chunkZ = di.getMinZChunk();
             CompletableFuture<Void> currentTask = CompletableFuture.completedFuture(null);
 
-            if (!currentTask.isDone()) return;
-            if (chunkX > di.getMaxXChunk()) {
-                wrappedTask.cancel();
-                bigFuture.complete(null);
-                return;
-            }
-            List<CompletableFuture<Void>> newTasks = new ArrayList<>();
-            for (int i = 0; i < plugin.getSettings().getDeleteSpeed(); i++) {
-                if (chunkX > di.getMaxXChunk()) {
-                    break;
+            @Override
+            public void run() {
+                if (!currentTask.isDone()) return;
+                if (isEnded(chunkX)) {
+                    BentoBox.getFoliaLib().getScheduler().cancelTask(regenerateSimpleTask);
+                    bigFuture.complete(null);
+                    return;
                 }
-                final int x = chunkX;
-                final int z = chunkZ;
-                newTasks.add(regenerateChunk(gm, di, world, x, z));
-                chunkZ++;
-                if (chunkZ > di.getMaxZChunk()) {
-                    chunkZ = di.getMinZChunk();
-                    chunkX++;
+                List<CompletableFuture<Void>> newTasks = new ArrayList<>();
+                for (int i = 0; i < plugin.getSettings().getDeleteSpeed(); i++) {
+                    if (isEnded(chunkX)) {
+                        break;
+                    }
+                    final int x = chunkX;
+                    final int z = chunkZ;
+                    newTasks.add(regenerateChunk(gm, di, world, x, z));
+                    chunkZ++;
+                    if (chunkZ > di.getMaxZChunk()) {
+                        chunkZ = di.getMinZChunk();
+                        chunkX++;
+                    }
                 }
+                currentTask = CompletableFuture.allOf(newTasks.toArray(new CompletableFuture[0]));
             }
-            currentTask = CompletableFuture.allOf(newTasks.toArray(new CompletableFuture[0]));
+
+            private boolean isEnded(int chunkX) {
+                return chunkX > di.getMaxXChunk();
+            }
         }, 1L, 20L);
         return bigFuture;
     }
